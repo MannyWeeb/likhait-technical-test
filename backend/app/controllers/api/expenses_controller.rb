@@ -11,6 +11,11 @@ class Api::ExpensesController < ApplicationController
 
       expenses = expenses.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
     end
+    
+    if params[:"date_order"].present?
+      direction = params[:"date_order"] == "ascending" ? :asc : :desc
+      expenses = expenses.reorder(date: direction)
+    end
 
     render json: expenses.map { |expense| format_expense(expense) }
   end
@@ -44,7 +49,7 @@ class Api::ExpensesController < ApplicationController
   private
 
   def expense_params
-    params.require(:expense).permit(:description, :amount, :category_id, :date)
+    params.require(:expense).permit(:description, :amount, :category_id, :date, :payer_name)
   end
 
   def format_expense(expense)
@@ -54,6 +59,7 @@ class Api::ExpensesController < ApplicationController
       amount: expense.amount.to_f,
       category: expense.category.name,
       date: expense.date.to_s,
+      payer_name: expense.payer_name,
       created_at: expense.created_at,
       updated_at: expense.updated_at
     }

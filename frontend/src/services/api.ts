@@ -4,13 +4,19 @@
 
 import { Expense, ExpenseFormData } from "../types";
 
-const API_BASE_URL = "http://localhost:3000/api";
+
+const API_BASE_URL = `${import.meta.env.VITE_API_URL ?? "http://localhost:3000"}/api`;
+
 
 /**
  * Fetch all expenses
  */
-export async function fetchExpenses(): Promise<Expense[]> {
-  const response = await fetch(`${API_BASE_URL}/expenses`);
+export async function fetchExpenses(
+  dateOrder: "ascending" | "descending" = "descending",
+): Promise<Expense[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/expenses?date_order=${dateOrder}`,
+  );
   if (!response.ok) {
     throw new Error("Failed to fetch expenses");
   }
